@@ -11,5 +11,11 @@
   "background": {
     "service_worker": "background.js"
   },
-  "host_permissions": ["https://suumo.jp/"]
+  "host_permissions": ["https://suumo.jp/"],
+  "web_accessible_resources": [
+    {
+      "resources": [ "*.png" ],
+      "matches": [ "https://suumo.jp/*" ]
+    }
+  ]
 }
