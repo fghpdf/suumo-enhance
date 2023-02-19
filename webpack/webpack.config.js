@@ -1,9 +1,16 @@
+/*
+ * @Author: fghpdf
+ * @Date: 2023-02-02 19:47:13
+ * @LastEditTime: 2023-02-19 11:26:59
+ * @LastEditors: fghpdf
+ */
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 module.exports = {
    mode: "production",
    entry: {
       background: path.resolve(__dirname, "..", "src", "background.ts"),
+      content: path.resolve(__dirname, "..", "src", "content.ts")
    },
    output: {
       path: path.join(__dirname, "../dist"),

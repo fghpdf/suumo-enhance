@@ -17,5 +17,11 @@
       "resources": [ "*.png" ],
       "matches": [ "https://suumo.jp/*" ]
     }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://suumo.jp/*"],
+      "js": ["content.js"]
+    }
   ]
 }
