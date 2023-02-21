@@ -78,5 +78,13 @@ function isFacilitiesDivExist(facilitiesDivId: string): boolean {
   return true;
 }
 
+// Separate description based on the delimiter into string tokens (default: ','). Trim whitespace around each token.
+	// Returns empty array when provided an empty string
+function splitDescription(facilityDescription: string, delimiter: string = ','): string[] {
+	const tokenArr: string[] = facilityDescription.split(delimiter);
+	for (let i = 0; i < tokenArr.length; ++i) { tokenArr[i] = tokenArr[i].trim(); }
+	return tokenArr;
+}
+
 // run
 getFacilities("bkdt-option", "suumo-enhance-facilities-icon");
