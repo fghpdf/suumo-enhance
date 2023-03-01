@@ -14,7 +14,7 @@
   "host_permissions": ["https://suumo.jp/"],
   "web_accessible_resources": [
     {
-      "resources": [ "*.png" ],
+      "resources": [ "*.png" , "*.svg"],
       "matches": [ "https://suumo.jp/*" ]
     }
   ],
