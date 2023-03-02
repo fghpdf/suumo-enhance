@@ -1,7 +1,9 @@
+import FACILITY_SVG_KEY from './facilities';
+
 /*
  * @Author: fghpdf
  * @Date: 2023-02-19 11:23:39
- * @LastEditTime: 2023-02-19 11:29:26
+ * @LastEditTime: 2023-03-01 22:41:32
  * @LastEditors: fghpdf
  */
 
@@ -9,34 +11,27 @@
  * Be aware that the injected function is a copy of the function referenced in the chrome.scripting.executeScript call, not the original function itself. As a result, the function's body must be self contained; references to variables outside of the function will cause the content script to throw a ReferenceError.
  */
 
-function getFacilities(facilitiesDivId: string, enhanceDivId: string): string {
+function getFacilities(facilitiesDivId: string, enhanceDivId: string): string[] {
   const facilitiesDiv = document.getElementById(facilitiesDivId);
   if (!facilitiesDiv) {
       console.warn(`div#${facilitiesDivId} can not be found`);
-      return '';
+      return [];
   }
   const facilitiesLis = facilitiesDiv.getElementsByTagName('li');
   if (!facilitiesLis || facilitiesLis.length == 0) {
       console.warn(`div#${facilitiesDivId} no li`);
-      return '';
+      return [];
   }
 
   const facilitiesStr = facilitiesLis[0].textContent;
   if (!facilitiesStr) {
       console.warn(`div#${facilitiesDivId} li no context`);
-      return '';
+      return [];
   }
-  console.log(facilitiesStr);
-  // verify only one section exist
-  const sectionDiv = document.getElementById(enhanceDivId);
-  if (sectionDiv) {
-      return facilitiesStr;
-  }
-  addSection(facilitiesDivId, enhanceDivId);
-  return facilitiesStr;
+  return splitDescription(facilitiesStr, '、');
 }
 
-function addSection(facilitiesDivId: string, enhanceDivId: string): void {
+function addSection(facilitiesDivId: string, enhanceDivId: string, facilities: string[]): void {
   let sectionDiv = document.createElement('div');
   sectionDiv.setAttribute('class', 'section l-space_small');
   sectionDiv.setAttribute('id', enhanceDivId);
@@ -45,10 +40,14 @@ function addSection(facilitiesDivId: string, enhanceDivId: string): void {
   whtDiv.setAttribute('class', 'bgc-wht ol-g');
 
   // add icon
-  let allDayDustImg = createFacilityImg('24-dust');
-  let bicycleParkingImg = createFacilityImg('bicycle-parking'); 
-  whtDiv.appendChild(allDayDustImg);
-  whtDiv.appendChild(bicycleParkingImg);
+  for (const facility of facilities) {
+    const imgKey = FACILITY_SVG_KEY[facility];
+    if (!imgKey) {
+      continue
+    }
+    let iconImg = createFacilityImg(imgKey);
+    whtDiv.appendChild(iconImg);
+  }
 
   sectionDiv.appendChild(whtDiv);
 
@@ -62,7 +61,7 @@ function addSection(facilitiesDivId: string, enhanceDivId: string): void {
 
 function createFacilityImg(facilityName: string): HTMLImageElement {
   let img = document.createElement('img');
-  img.setAttribute('src', chrome.runtime.getURL(`${facilityName}.png`));
+  img.setAttribute('src', chrome.runtime.getURL(`${facilityName}.svg`));
   // 24-dust -> 24 dust
   img.setAttribute('alt', `${facilityName.replace('-', ' ')} available`);
   img.setAttribute('width', `128`);
@@ -86,5 +85,24 @@ function splitDescription(facilityDescription: string, delimiter: string = ','):
 	return tokenArr;
 }
 
+function main() {
+  const enhanceDivId = "suumo-enhance-facilities-icon";
+  const facilitiesDivId = "bkdt-option";
+  // verify only one section exist
+  const sectionDiv = document.getElementById(enhanceDivId);
+  if (sectionDiv) {
+      return;
+  }
+  // parse facility description
+  const facilities = getFacilities(facilitiesDivId, enhanceDivId);
+  console.log(facilities);
+  if (facilities.length == 0) {
+    return;
+  }
+
+  // render
+  addSection(facilitiesDivId, enhanceDivId, facilities);
+}
+
 // run
-getFacilities("bkdt-option", "suumo-enhance-facilities-icon");
+main();
